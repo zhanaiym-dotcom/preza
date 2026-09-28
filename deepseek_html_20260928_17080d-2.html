@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLS 210 - Presentation #1</title>
+    
+    <!-- Fonts: Playfair Display for elegant headers, Inter for clean body text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Light, academic palette matching your screenshot */
+            --bg-page: #ececf5;      /* Very light lavender background */
+            --bg-slide: #f4f4f9;     /* Lighter lavender for the slide content */
+            --sidebar-bg: #3b2e5e;   /* Dark violet sidebar */
+            --sidebar-text: #d1c4e9; /* Light text for sidebar */
+            
+            --text-heading: #2d2a35;
+            --text-body: #4a4756;
+            --text-light: #7a778a;
+            
+            --accent: #6a4c9c;       /* Deep violet accent */
+            --accent-light: #e0d4f5; /* Light violet for borders/highlights */
+            --card-bg: #ffffff;
+            --border-color: #d1c4e9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-body);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            overflow: hidden; /* Prevents scrollbar if content fits perfectly */
+        }
+
+        /* Presentation Container */
+        .presentation-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1200px;
+            height: calc(100vh - 40px); /* Fills the available window height */
+        }
+
+        /* Slide Card */
+        .slide-wrapper {
+            display: none; /* Hidden by default, toggled by JS */
+            background-color: var(--bg-slide);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            position: relative;
+            animation: fadeIn 0.4s ease;
+            flex-grow: 1; /* Makes it stretch to fill the container */
+        }
+
+        .slide-wrapper.active {
+            display: flex; /* Flex layout for sidebar + content */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 80px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+            flex-shrink: 0;
+        }
+
+        .sidebar .number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #a68ad6;
+            margin-bottom: 20px;
+        }
+
+        .sidebar .section-name {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #b8a6d9;
+        }
+
+        /* Main Content Area */
+        .slide-content {
+            flex-grow: 1;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Top Header Line */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .slide-header .title-small {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        .slide-header .title-small strong {
+            color: var(--accent);
+        }
+
+        /* Typography */
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--text-heading);
+            margin-bottom: 25px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--accent);
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-heading);
+        }
+
+        p, li {
+            font-size: 1.05rem;
+            color: var(--text-body);
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        /* Lists */
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 12px;
+        }
+
+        ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 1rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+            background-color: #f0ebf8;
+            border-bottom: 2px solid var(--accent-light);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background-color: #f0ebf8;
+            padding: 25px;
+            border-left: 4px solid var(--accent);
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            flex-grow: 1; /* Allows it to stretch if needed */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Grid Layouts */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+            flex-grow: 1;
+        }
+
+        .grid-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .grid-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+        }
+
+        .grid-card h3 {
+            color: var(--accent);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* AI Transparency Layout */
+        .ai-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 10px;
+            flex-grow: 1;
+            justify-content: center;
+        }
+        .ai-item {
+            display: flex;
+            gap: 20px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-light);
+            align-items: center;
+        }
+        .ai-label {
+            font-weight: 600;
+            color: var(--accent);
+            min-width: 160px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .ai-desc {
+            flex-grow: 1;
+            color: var(--text-body);
+        }
+
+        /* References Specific Styles */
+        .references-list {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-top: 10px;
+            flex-grow: 1;
+        }
+        .references-list li {
+            margin-bottom: 18px;
+            padding-left: 20px;
+            text-indent: -20px; /* Hanging indent for academic feel */
+        }
+        .references-list li::before {
+            content: "◆"; /* Diamond bullet like your screenshot */
+            color: var(--accent);
+            font-size: 0.8rem;
+            top: 4px;
+            left: 0;
+        }
+        .references-list a {
+            color: var(--accent);
+            text-decoration: none;
+            word-break: break-all; /* Prevents long URLs from breaking layout */
+        }
+        .references-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer Navigation */
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto; /* Pushes footer to the bottom */
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: none;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--accent);
+            color: white;
+        }
+
+        .nav-btn:disabled {
+            border-color: #d1c4e9;
+            color: #d1c4e9;
+            cursor: not-allowed;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-grow: 1;
+            margin: 0 30px;
+        }
+
+        .progress-bar {
+            height: 2px;
+            background-color: var(--accent-light);
+            flex-grow: 1;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .page-indicator {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 850px) {
+            body { padding: 10px; }
+            .slide-wrapper.active { flex-direction: column; }
+            .sidebar { width: 100%; flex-direction: row; padding: 15px 20px; justify-content: space-between; }
+            .sidebar .number { margin-bottom: 0; }
+            .sidebar .section-name { writing-mode: horizontal-tb; transform: none; }
+            .slide-content { padding: 20px; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.6rem; }
+            .grid-3 { grid-template-columns: 1fr; }
+            .ai-item { flex-direction: column; gap: 5px; align-items: flex-start; }
+            .ai-label { min-width: auto; }
+            .progress-container { margin: 0 10px; }
+            .references-list li { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+
+        <!-- PAGE 1: Title Slide -->
+        <div class="slide-wrapper active" id="slide-1">
+            <div class="sidebar">
+                <div class="number">01</div>
+                <div class="section-name">Title</div>
+            </div>
+            <div class="slide-content" style="justify-content: center; text-align: center;">
+                <p style="text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 600; font-size: 0.9rem; margin-bottom: 15px;">Research Design · Descriptive Study</p>
+                <h1 style="font-size: 3.5rem; margin-bottom: 30px;">Public accountability for gender-based violence accusations in Kazakhstan</h1>
+                <div style="width: 60px; height: 3px; background-color: var(--accent); margin: 0 auto 30px auto;"></div>
+                <h3 style="font-size: 1.3rem; margin-bottom: 5px;">Zhanaiym</h3>
+                <p style="color: var(--text-light);">PLS 210 · Presentation #1</p>
+                
+                <!-- Footer for Page 1 -->
+                <div class="slide-footer" style="border-top: none; margin-top: 50px; padding-top: 0; justify-content: center; gap: 50px;">
+                    <button class="nav-btn" disabled>Back</button>
+                    <div class="progress-container" style="flex-grow: 0;">
+                        <div class="progress-bar" style="width: 100px;"><div class="progress-fill" style="width: 8.33%;"></div></div>
+                        <span class="page-indicator">1 / 12</span>
+                    </div>
+                    <button class="nav-btn" onclick="changeSlide(1)">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: Research Question -->
+        <div class="slide-wrapper" id="slide-2">
+            <div class="sidebar">
+                <div class="number">02</div>
+                <div class="section-name">Research Question</div>
+            </div>
+            <div class="slide-content">
+                <div class="slide-header">
+                    <span class="title-small">Section: <strong>Question</strong></span>
+                </div>
+                <h2>Research Question</h2>
+                <div class="highlight-box" style="font-size: 1.3rem; line-height: 1.6;">
+                    "What forms of public accountability occurred in Kazakhstan when public figures were publicly accused of gender-based violence between 2023 and 2026, and how can they be categorized as informal social sanctions, institutional/reputational sanctions, or formal legal consequences?"
+                </div>
+                <ul style="margin-top: 20px;">
+                    <li><strong>Empirical Scope:</strong> Based on observable events, not normative judgments.</li>
+                    <li><strong>Defined Boundaries:</strong> Specific to Kazakhstan, public figures, and a defined time frame (2023–2026).</li>
+                    <li><strong>Analytical Goal:</strong> Answerable through the systematic categorization of documented cases.</li>
+                </ul>
+                <div class="slide-footer">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="changeSlide(-1)">Back</button>
+                        <button class="nav-btn" onclick="changeSlide(1)">Next</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <span class="page-indicator">2 / 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: Epistemology & Positioning -->
+        <div class="slide-wrapper" id="slide-3">
+            <div class="sidebar">
+                <div class="number">03</div>
+                <div class="section-name">Positioning</div>
+            </div>
+            <div class="slide-content">
+                <div class="slide-header">
+                    <span class="title-small">Section: <strong>Where This Sits</strong></span>
+                </div>
+                <h2>Epistemology & Positioning</h2>
+                <table>
+                    <tr>
+                        <th style="width: 30%;">Element</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Epistemological Stance</strong></td>
+                        <td><strong>Descriptive</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Justification</strong></td>
+                        <td>This project does not seek to explain <em>why</em> accountability occurs (causal) or to test a hypothesis (positivist). Instead, it seeks to <strong>map and categorize</strong> the observable forms of accountability that emerge in the public sphere.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Researcher Positionality</strong></td>
+                        <td>As an outside observer of these public events, I am not measuring the guilt or innocence of the accused, but rather documenting the <strong>social and institutional reactions</strong> to the accusations.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analytical Goal</strong></td>
+                        <td>To provide a clear typology of sanctions (informal, reputational, legal) that can be used for future comparative research in the region.</td>
+                    </tr>
+                </table>
+                <div class="slide-footer">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="changeSlide(-1)">Back</button>
+                        <button class="nav-btn" onclick="changeSlide(1)">Next</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <span class="page-indicator">3 / 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 4: Contribution -->
+        <div class="slide-wrapper" id="slide-4">
+            <div class="sidebar">
+                <div class="number">04</div>
+                <div class="section-name">Contribution</div>
+            </div>
+            <div class="slide-content">
+                <div class="slide-header">
+                    <span class="title-small">Section: <strong>What It Adds</strong></span>
+                </div>
+                <h2>Contribution: What It Adds</h2>
+                <ul style="margin-top: 10px;">
+                    <li><strong>Fills a Regional Gap:</strong> Most literature on gender-based violence accountability focuses on Western contexts. This project applies these concepts to <strong>Central Asia (Kazakhstan)</strong>.</li>
+                    <li><strong>Provides a Typology:</strong> It moves beyond a binary of "legal vs. illegal" by explicitly recognizing <strong>informal social sanctions</strong> and <strong>reputational sanctions</strong> as legitimate forms of accountability.</li>
+                    <li><strong>Bridges Disciplines:</strong> Connects socio-legal studies with media and communication studies, showing how public accusations (often via social media) translate into tangible consequences.</li>
+                    <li><strong>Time-Specific:</strong> Captures a contemporary wave of digital activism and public discourse in Kazakhstan (2023–2026).</li>
+                </ul>
+                <div class="slide-footer">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="changeSlide(-1)">Back</button>
+                        <button class="nav-btn" onclick="changeSlide(1)">Next</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <span class="page-indicator">4 / 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 5: Literature Review -->
+        <div class="slide-wrapper" id="slide-5">
+            <div class="sidebar">
+                <div class="number">05</div>
+                <div class="section-name">Literature</div>
+            </div>
+            <div class="slide-content">
+                <div class="slide-header">
+                    <span class="title-small">Section: <strong>What We Already Know</strong></span>
+                </div>
+                <h2>Literature Review: Three Camps</h2>
+                <div class="grid-3">
+                    <div class="grid-card">
+                        <h3>1. Informal Social Sanctions</h3>
+                        <p>Digital publics use shame, hashtags, and public call-outs to enforce social norms when formal institutions fail.</p>
+                        <p style="font-size: 0.85rem; color: var(--accent); margin-top: auto;"><em>Arystanbek; Lewis & Christin; Hornle</em></p>
+                    </div>
+                    <div class="grid-card">
+                        <h3>2. Institutional/Reputational</h3>
+                        <p>Media framing and public pressure can lead to loss of sponsorships, job termination, or reputational damage for public figures.</p>
+                        <p style="font-size: 0.85rem; color: var(--accent); margin-top: auto;"><em>Lewis & Christin; Meyer</em></p>
+                    </div>
+                    <div class="grid-card">
+                        <h3>3. Formal Legal Consequences</h3>
+                        <p>Legal frameworks in post-Soviet states often struggle to prosecute GBV, leading to low conviction rates and reliance on administrative penalties.</p>
+                        <p style="font-size: 0.85rem; color: var(--accent); margin-top: auto;"><em>Kainazarova; Akisheva; Hornle</em></p>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="changeSlide(-1)">Back</button>
+                        <button class="nav-btn" onclick="changeSlide(1)">Next</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <span class="page-indicator">5 / 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 6: Research Gap -->
+        <div class="slide-wrapper" id="slide-6">
+            <div class="sidebar">
+                <div class="number">06</div>
+                <div class="section-name">Gap</div>
+            </div>
+            <div class="slide-content">
+                <div class="slide-header">
+                    <span class="title-small">Section: <strong>What is Missing</strong></span>
+                </div>
+                <h2>Research Gap</h2>
+                <div class="highlight-box">
+                    <h3>What is missing?</h3>
+                    <p>While each of these sanction types is studied independently, there is a lack of <strong>integrated frameworks</strong> that categorize how they interact in non-Western, post-Soviet contexts.</p>
+                </div>
+                <ul>
+                    <li><strong>Fragmentation:</strong> Studies tend to focus exclusively on either legal reform <em>or</em> digital activism, rarely both simultaneously.</li>
+                    <li><strong>Context Blindness:</strong> Theories developed in the US/EU do not always account for the specific political and cultural dynamics of Kazakhstan (e.g., the role of local Telegram channels vs. global platforms).</li>
+                    <li><strong>Lack of Typology:</strong> There is no clear, descriptive categorization of the <em>forms</em> of accountability that occur in this specific region and time frame.</li>
+                </ul>
+                <div class="slide-footer">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="changeSlide(-1)">Back</button>
+                        <button class="nav-btn" onclick="changeSlide(1)">Next</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <span class="page-indicator">6 / 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 7: No Cause Claimed -->
+        <div class="slide-wrapper" id="slide-7">
+            <div class="sidebar">
+                <div class="number">07</div>
+                <div class="section-name">Scope</div>
+            </div>
+            <div class="slide-content">
+                <div class="slide-header">
+                    <span class="title-small">Section: <strong>Limitations</strong></span>
+                </div>
+                <h2>Scope & Limitations: No Cause Claimed</h2>
+                <p style="margin-bottom: 20px;">This is a <strong>descriptive</strong> project, not a causal one. My goal is to map the landscape, not to explain the mechanisms behind it.</p>
+                <div class="grid-3">
+                    <div class="grid-card">
+                        <h3>What I <em>am</em> doing</h3>
+                        <ul>
+                            <li>Identifying patterns of accountability.</li>
+                            <li>Categorizing them into a typology.</li>
+                            <li>Documenting the <em>what</em> and <em>how</em>.</li>
+                        </ul>
+                    </div>
+                    <div class="grid-card">
+                        <h3>What I <em>am not</em> doing</h3>
+                        <ul>
+                            <li>Claiming that social media <em>causes</em> legal change.</li>
+                            <li>Testing a hypothesis about why institutions react.</li>
+                            <li>Measuring the effectiveness of these sanctions.</li>
+                        </ul>
+                    </div>
+                    <div class="grid-card">
+                        <h3>Why this matters</h3>
+                        <ul>
+                            <li>Prevents overreach.</li>
+                            <li>Keeps the focus on empirical observation.</li>
+                            <li>Provides a foundation for future causal research.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="changeSlide(-1)">Back</button>
+                        <button class="nav-btn" onclick="changeSlide(1)">Next</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <span class="page-indicator">7 / 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 8: Categories / Framework Part 1 -->
+        <div class="slide-wrapper" id="slide-8">
+            <div class="sidebar">
+                <div class="number">08</div>
+                <div class="section-name">Framework</div>
+            </div>
+            <div class="slide-content">
+                <div class="slide-header">
+                    <span class="title-small">Section: <strong>Typology</strong></span>
+                </div>
+                <h2>Framework / Typology</h2>
+                <p style="margin-bottom: 20px;">The framework is built on three mutually exclusive, yet often co-occurring, categories of accountability.</p>
+                <div class="grid-3">
+                    <div class="grid-card">
+                        <h3>1. Informal Social</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 15px;"><strong>Definition:</strong> Actions taken by the public or digital communities.</p>
+                        <ul>
+                            <li>Viral call-out posts.</li>
+                            <li>Hashtag campaigns.</li>
+                            <li>Public shaming on Telegram/Instagram.</li>
+                        </ul>
+                    </div>
+                    <div class="grid-card">
+                        <h3>2. Institutional/Reputational</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 15px;"><strong>Definition:</strong> Actions taken by organizations, employers, or media.</p>
+                        <ul>
+                            <li>Loss of brand sponsorships.</li>
+                            <li>Termination from public roles.</li>
+                            <li>Negative media framing.</li>
+                        </ul>
+                    </div>
+                    <div class="grid-card">
+                        <h3>3. Formal Legal</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 15px;"><strong>Definition:</strong> Actions taken by the state or legal system.</p>
+                        <ul>
+                            <li>Criminal charges filed.</li>
+                            <li>Administrative fines.</li>
+                            <li>Civil lawsuits.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="changeSlide(-1)">Back</button>
+                        <button class="nav-btn" onclick="changeSlide(1)">Next</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <span class="page-indicator">8 / 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 9: Categories / Framework Part 2 -->
+        <div class="slide-wrapper" id="slide-9">
+            <div class="sidebar">
+                <div class="number">09</div>
+                <div class="section-name">Criteria</div>
+            </div>
+            <div class="slide-content">
+                <div class="slide-header">
+                    <span class="title-small">Section: <strong>Framework</strong></span>
+                </div>
+                <h2>Framework Criteria: Clarity, Comparability, Completeness</h2>
+                <p style="margin-bottom: 20px;">Why this typology works for a descriptive study:</p>
+                <table>
+                    <tr>
+                        <th style="width: 25%;">Criteria</th>
+                        <th>Application to this Project</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Clarity</strong></td>
+                        <td>Each category has clear boundaries. A viral post is clearly distinct from a court ruling.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Comparability</strong></td>
+                        <td>Allows for cross-case comparison. For example, comparing the consequences of two different accusations within the same time frame.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Completeness</strong></td>
+                        <td>Captures the full spectrum of accountability, from the bottom-up (social) to the top-down (legal). It does not privilege one form over another.</td>
+                    </tr>
+                </table>
+                <div class="slide-footer">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="changeSlide(-1)">Back</button>
+                        <button class="nav-btn" onclick="changeSlide(1)">Next</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <span class="page-indicator">9 / 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 10: AI Transparency -->
+        <div class="slide-wrapper" id="slide-10">
+            <div class="sidebar">
+                <div class="number">10</div>
+                <div class="section-name">Transparency</div>
+            </div>
+            <div class="slide-content">
+                <div class="slide-header">
+                    <span class="title-small">Section: <strong>AI Statement</strong></span>
+                </div>
+                <h2>AI Transparency Statement</h2>
+                <div class="ai-list">
+                    <div class="ai-item">
+                        <div class="ai-label">Topic & Region</div>
+                        <div class="ai-desc">I independently chose the topic of GBV accountability and narrowed it down to <strong>Kazakhstan</strong>. AI did not generate the core idea.</div>
+                    </div>
+                    <div class="ai-item">
+                        <div class="ai-label">Research Question</div>
+                        <div class="ai-desc">AI helped me <strong>formulate the final RQ</strong> and refine the wording. I had to iterate several times to ensure the scope was tight enough.</div>
+                    </div>
+                    <div class="ai-item">
+                        <div class="ai-label">Literature Selection</div>
+                        <div class="ai-desc">I selected the 6 relevant sources and verified their credibility. AI assisted in <strong>explaining complex analyses</strong> within the papers and helped me identify where to apply their theories.</div>
+                    </div>
+                    <div class="ai-item">
+                        <div class="ai-label">Time-Scope</div>
+                        <div class="ai-desc">AI helped me identify the relevance of the <strong>2023–2026 timeframe</strong> by scanning recent discourse patterns.</div>
+                    </div>
+                    <div class="ai-item">
+                        <div class="ai-label">Presentation Design</div>
+                        <div class="ai-desc">AI helped generate the <strong>HTML code and structure</strong> for this web-based presentation, ensuring it met the technical requirements.</div>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="changeSlide(-1)">Back</button>
+                        <button class="nav-btn" onclick="changeSlide(1)">Next</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <span class="page-indicator">10 / 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 11: Ungraded Reflection -->
+        <div class="slide-wrapper" id="slide-11">
+            <div class="sidebar">
+                <div class="number">11</div>
+                <div class="section-name">Reflection</div>
+            </div>
+            <div class="slide-content">
+                <div class="slide-header">
+                    <span class="title-small">Section: <strong>Ungraded</strong></span>
+                </div>
+                <h2>Ungraded Reflection</h2>
+                <div class="highlight-box">
+                    <h3>What working with AI helped me understand</h3>
+                    <p>AI was excellent at helping me <strong>structure</strong> my thoughts and identify the boundaries of my categories. It acted as a sounding board to ensure my descriptive categories (social, institutional, legal) were distinct and comparable. It also helped me realize that my original RQ was too broad and needed to be scoped to a specific time and place.</p>
+                </div>
+                <div class="highlight-box" style="border-left-color: #b39ddb; background-color: #f3e5f5; margin-top: 20px;">
+                    <h3>What I still don't understand about my research design</h3>
+                    <p>I am still uncertain about <strong>how to handle the time-scope</strong> (2023–2026) in a descriptive study. Since the events are recent, will I have enough data by the time I complete the research? I am also unsure if I should treat <em>attempted</em> legal action (e.g., a police report that was dismissed) as a "formal legal consequence" or if it belongs in a different category. I need to refine my operational definitions further.</p>
+                </div>
+                <div class="slide-footer">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="changeSlide(-1)">Back</button>
+                        <button class="nav-btn" onclick="changeSlide(1)">Next</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <span class="page-indicator">11 / 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 12: References -->
+        <div class="slide-wrapper" id="slide-12">
+            <div class="sidebar">
+                <div class="number">12</div>
+                <div class="section-name">References</div>
+            </div>
+            <div class="slide-content">
+                <div class="slide-header">
+                    <span class="title-small">Section: <strong>Sources</strong></span>
+                </div>
+                <h2>References</h2>
+                
+                <!-- Updated Reference List from Screenshot -->
+                <ul class="references-list">
+                    <li>
+                        Akisheva, A. (2025). Questions of harmonization with international legal and policy standards on violence against women and girls in Central Asia. <em>International Journal of Discrimination and the Law</em>. <a href="https://doi.org/10.1177/13582291251327140" target="_blank">https://doi.org/10.1177/13582291251327140</a>
+                    </li>
+                    <li>
+                        Arystanbek, A. (2023). “Can you beat your wife, yes or no?”: A study of hegemonic femininity in Kazakhstan’s online discourses. <em>East European Politics</em>, 39(2). <a href="https://doi.org/10.1080/21599165.2021.2024516" target="_blank">https://doi.org/10.1080/21599165.2021.2024516</a>
+                    </li>
+                    <li>
+                        Hörnle, T. (2021). Evaluating #MeToo: The perspective of criminal law theory. <em>German Law Journal</em>, 22(5), 833–846. <a href="https://doi.org/10.1017/glj.2021.34" target="_blank">https://doi.org/10.1017/glj.2021.34</a>
+                    </li>
+                    <li>
+                        Kainazarova, M., Abdukarimova, Z., Aitkhozhin, K., & Bayanbayeva, A. (2025). Quantifying a hidden crisis: Challenges in addressing domestic violence against women in Kazakhstan. <em>International Journal of Discrimination and the Law</em>, 26(2), 212–232. <a href="https://doi.org/10.1177/13582291251337325" target="_blank">https://doi.org/10.1177/13582291251337325</a>
+                    </li>
+                    <li>
+                        Lewis, R., & Christin, A. (2022). Platform drama: “Cancel culture,” celebrity, and the struggle for accountability on YouTube. <em>New Media & Society</em>, 24(7), 1632–1656. <a href="https://doi.org/10.1177/14614448221099235" target="_blank">https://doi.org/10.1177/14614448221099235</a>
+                    </li>
+                    <li>
+                        Meyer, A. (2024). Blaming the victim, preserving the icon: The gendered moral work of celebrity sexual abuse scandals. <em>Feminist Media Studies</em>, 25(8), 1890–1904. <a href="https://doi.org/10.1080/14680777.2024.2392102" target="_blank">https://doi.org/10.1080/14680777.2024.2392102</a>
+                    </li>
+                </ul>
+
+                <div class="slide-footer">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="changeSlide(-1)">Back</button>
+                        <button class="nav-btn" onclick="changeSlide(1)" disabled>Next</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+                        <span class="page-indicator">12 / 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript for Navigation -->
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide-wrapper');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            // Hide all slides
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            // Show the current slide
+            slides[index].classList.add('active');
+
+            // Update progress bar on the current slide
+            const progressFill = slides[index].querySelector('.progress-fill');
+            if (progressFill) {
+                const progressPercent = ((index + 1) / totalSlides) * 100;
+                progressFill.style.width = progressPercent + '%';
+            }
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            
+            // Clamp the index to valid range
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
+            
+            showSlide(currentSlide);
+        }
+
+        // Initialize the first slide
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>
